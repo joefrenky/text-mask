@@ -20,7 +20,8 @@ export default function createNumberMask({
   requireDecimal = false,
   allowNegative = false,
   allowLeadingZeroes = false,
-  integerLimit = null
+  integerLimit = null,
+  forceConvertPeriodToDecimalSymbol = false,
 } = {}) {
   const prefixLength = prefix && prefix.length || 0
   const suffixLength = suffix && suffix.length || 0
@@ -28,6 +29,10 @@ export default function createNumberMask({
 
   function numberMask(rawValue = emptyString) {
     const rawValueLength = rawValue.length
+
+    if (allowDecimal && forceConvertPeriodToDecimalSymbol || requireDecimal && forceConvertPeriodToDecimalSymbol) {
+      rawValue = convertPeriodToDecimalSymbol(rawValue, decimalSymbol)
+    }
 
     if (
       rawValue === emptyString ||
@@ -143,4 +148,8 @@ function convertToMask(strNumber) {
 // http://stackoverflow.com/a/10899795/604296
 function addThousandsSeparator(n, thousandsSeparatorSymbol) {
   return n.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparatorSymbol)
+}
+
+function convertPeriodToDecimalSymbol(rawValue, decimalSymbol) {
+  return rawValue.replace('.', decimalSymbol)
 }
